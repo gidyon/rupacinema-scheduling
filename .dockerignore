@@ -1,0 +1,9 @@
+api/
+cmd/
+internal/
+pkg/
+dummy/
+third_party/
+booking.sql
+.git*
+Makefile
