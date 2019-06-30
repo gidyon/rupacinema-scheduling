@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+option go_package="scheduler";
+
+package rupacinema.movie;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+import "movie/api/proto/movie.proto";
+
+// Request to vote up a movie
+message VoteUpMovieRequest {
+    string movie_id = 1;
+    string user_id = 2;
+    string screen = 5;
+    string show_time = 6;
+    int32 week_day = 3;
+    int32 show_number = 4;
+}
+
+// Cinema show for a particular time of day
+message ShowSchedule {
+    string play_time = 1;
+    rupacinema.movie.Movie movie = 2;
+    repeated rupacinema.movie.Movie voted_movies = 3;
+}
+
+// Movie and the show number
+message ShowsSchedule {
+    map<int32, ShowSchedule> shows_schedule = 1;
+}
+
+// Movies playing in a day for a particular screen
+message ScreensSchedule {
+    map<string, ShowsSchedule> screens_schedule = 1;
+}
+
+// Cinema schedule for a particular day of the week
+message DaysSchedule {
+    map<int32, ScreensSchedule> days_schedule = 1;
+}
+
+
+// Request to get schedule
+message GetDayScheduleRequest {
+    int32 week_day = 1;
+}
+
+// Request to get show
+message GetShowScheduleRequest {
+    int32 week_day = 1;
+    int32 show = 2;
+    string screen = 3;
+}
+
+// Request to create a new show schedule for a day
+message CreateMovieDayScheduleRequest {
+    int32 week_day = 1;
+    int32 show = 2;
+    string screen = 3;
+    rupacinema.movie.Movie movie = 4;
+}
+
+// Request to delete a show schedule for a day
+message DeleteMovieDayScheduleRequest {
+    int32 week_day = 1;
+    int32 show = 2;
+    string screen = 3;
+    string movie_id = 4;
+}
+
+// Schedules movies that play in cinema shows
+service ShowScheduler {
+    // Votes for a movie to be played at cinema. Requires authentication
+    rpc VoteUpMovie (VoteUpMovieRequest) returns (rupacinema.movie.Movie) {
+        // VoteUpMovie custom method maps to HTTP POST method
+        // movie_id, user_id, week_day, show, show_time maps to the request body
+        option (google.api.http) = {
+            post: "/api/movies:vote"
+            body: "*"
+        };
+    }
+
+    // Creates schedule for a particular day and show. Requires authentication
+    rpc CreateMovieDaySchedule (CreateMovieDayScheduleRequest) returns (google.protobuf.Empty) {
+        // CreateMovieDaySchedule maps to HTTP POST method
+        // week_day, screen, show and movie maps to the body of the request
+        option (google.api.http) = {
+            post: "/api/movies/schedule"
+            body: "*"
+        };
+    }
+
+    // Delete schedule for a particular day and show. Requires authentication
+    rpc DeleteMovieDaySchedule (DeleteMovieDayScheduleRequest) returns (google.protobuf.Empty) {
+        // DeleteMovieDaySchedule maps to HTTP DELETE method
+        // week_day, screen, show and movie_id maps to URL query parameters        
+        option (google.api.http) = {
+            delete: "/api/movies/schedule"
+        };
+    }
+
+    // Retrieves shows schedule for a particular week day.
+    rpc GetDaySchedule(GetDayScheduleRequest) returns (ScreensSchedule) {
+        // GetDaySchedule method maps to HTTP GET method
+        // week_day is passed in the URL path parameter
+        option (google.api.http) = {
+            get: "/api/movies/schedule/{week_day}"
+        };
+    }
+
+    // Retrieves show for a particular week day and screen.
+    rpc GetShowSchedule(GetShowScheduleRequest) returns (ShowSchedule) {
+        // GetShowSchedule method maps to HTTP GET method
+        // week_day, show, screen are passed in the URL query parameters
+        option (google.api.http) = {
+            get: "/api/movies/show"
+        };
+    }
+}
