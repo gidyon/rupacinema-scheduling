@@ -177,6 +177,14 @@ func (scheduleAPI *scheduleAPIServer) updateMovieInfo(
 func (scheduleAPI *scheduleAPIServer) VoteUpMovie(
 	ctx context.Context, voteReq *scheduler.VoteUpMovieRequest,
 ) (*movie.Movie, error) {
+	// Authenticate the request
+	_, err := scheduleAPI.accountServiceClient.AuthenticateRequest(
+		ctx, &empty.Empty{},
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	movieID := voteReq.GetMovieId()
 	userID := voteReq.GetUserId()
 	screen := voteReq.GetScreen()
@@ -245,6 +253,14 @@ func (scheduleAPI *scheduleAPIServer) VoteUpMovie(
 func (scheduleAPI *scheduleAPIServer) CreateMovieDaySchedule(
 	ctx context.Context, makeReq *scheduler.CreateMovieDayScheduleRequest,
 ) (*empty.Empty, error) {
+	// Authenticate the request
+	_, err := scheduleAPI.accountServiceClient.AuthenticateRequest(
+		ctx, &empty.Empty{},
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	weekDay := makeReq.GetWeekDay()
 	screen := makeReq.GetScreen()
 	showNumber := makeReq.GetShow()
@@ -313,6 +329,14 @@ func (scheduleAPI *scheduleAPIServer) CreateMovieDaySchedule(
 func (scheduleAPI *scheduleAPIServer) AddVotedMovie(
 	ctx context.Context, addReq *scheduler.AddVotedMovieRequest,
 ) (*empty.Empty, error) {
+	// Authenticate the request
+	_, err := scheduleAPI.accountServiceClient.AuthenticateRequest(
+		ctx, &empty.Empty{},
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	weekDay := addReq.GetWeekDay()
 	screen := addReq.GetScreen()
 	showNumber := addReq.GetShow()
@@ -386,6 +410,14 @@ func (scheduleAPI *scheduleAPIServer) AddVotedMovie(
 func (scheduleAPI *scheduleAPIServer) DeleteMovieDaySchedule(
 	ctx context.Context, delReq *scheduler.DeleteMovieDayScheduleRequest,
 ) (*empty.Empty, error) {
+	// Authenticate the request
+	_, err := scheduleAPI.accountServiceClient.AuthenticateRequest(
+		ctx, &empty.Empty{},
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	weekDay := delReq.GetWeekDay()
 	screen := delReq.GetScreen()
 	showNumber := delReq.GetShow()
